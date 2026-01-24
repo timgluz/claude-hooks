@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file-guard -protect .env,.secret,id_rsa,credentials.json,*.key,*.pem"
+          }
+        ]
+      }
+    ]
+  }
+}
