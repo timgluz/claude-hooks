@@ -33,6 +33,7 @@ Create or edit `.claude/settings.local.json` in your project directory and add t
 Protects sensitive files from being accessed by Claude Code during Read and Grep operations.
 
 **Features:**
+
 - Blocks access to files matching specified patterns (.env, credentials, SSH keys, etc.)
 - Uses substring matching for flexible protection
 - Configurable via command-line flags
@@ -40,6 +41,7 @@ Protects sensitive files from being accessed by Claude Code during Read and Grep
 - Exits with error when protected files are accessed
 
 **Example error message:**
+
 ```
 BLOCKED: File '/path/to/.env' matches protected pattern '.env'.
 To allow access, remove '.env' from the -protect flag in .claude/settings.local.json
@@ -50,6 +52,7 @@ To allow access, remove '.env' from the -protect flag in .claude/settings.local.
 **Quick setup:**
 
 ```json
+# .claude/settings.local.json
 {
   "hooks": {
     "PreToolUse": [
@@ -99,10 +102,12 @@ Claude Code's hooks system allows you to intercept tool calls:
 
 Hooks that exit with a non-zero status code block the operation and display an error to Claude.
 
+More details on Claude Code hooks can be found in the [Claude Code documentation](https://code.claude.com/docs/en/hooks).
+
 ## Contributing
 
 Feel free to submit issues or pull requests for new hooks or improvements to existing ones.
 
 ## License
 
-See individual hook directories for license information.
+MPL-2.0 License. See the [LICENSE](LICENSE) file for details.
