@@ -1,0 +1,9 @@
+# Compiled binaries
+bin/
+
+# Debug and test files
+hook-debug.json
+debug-hook.sh
+
+# Environment files
+.env

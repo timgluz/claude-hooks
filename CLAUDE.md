@@ -86,3 +86,16 @@ Protection patterns use substring matching (not glob or regex):
 - `.env` blocks any path containing ".env" (e.g., `.env`, `config/.env.local`, `test.env`)
 - `id_rsa` blocks paths containing "id_rsa" (e.g., `~/.ssh/id_rsa`, `backup/id_rsa.pub`)
 - Use specific patterns to avoid over-blocking (e.g., `credentials.json` instead of `json`)
+
+## Error Messages
+
+When a file is blocked, file-guard provides clear feedback:
+```
+BLOCKED: File '/path/to/.env' matches protected pattern '.env'.
+To allow access, remove '.env' from the -protect flag in .claude/settings.local.json
+```
+
+The error message includes:
+- Which file was blocked
+- Which pattern triggered the block
+- How to modify the configuration to allow access

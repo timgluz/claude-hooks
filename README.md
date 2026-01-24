@@ -36,7 +36,14 @@ Protects sensitive files from being accessed by Claude Code during Read and Grep
 - Blocks access to files matching specified patterns (.env, credentials, SSH keys, etc.)
 - Uses substring matching for flexible protection
 - Configurable via command-line flags
+- Clear error messages showing which pattern matched and how to fix
 - Exits with error when protected files are accessed
+
+**Example error message:**
+```
+BLOCKED: File '/path/to/.env' matches protected pattern '.env'.
+To allow access, remove '.env' from the -protect flag in .claude/settings.local.json
+```
 
 [Read more →](file-guard/README.md)
 

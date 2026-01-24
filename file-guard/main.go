@@ -11,13 +11,20 @@ import (
 
 var version = "0.0.1"
 
+type HookPayload struct {
+	SessionID      string    `json:"session_id"`
+	TranscriptPath string    `json:"transcript_path"`
+	Cwd            string    `json:"cwd"`
+	PermissionMode string    `json:"permission_mode"`
+	HookEventName  string    `json:"hook_event_name"`
+	ToolName       string    `json:"tool_name"`
+	ToolInput      ToolInput `json:"tool_input"`
+	ToolUseID      string    `json:"tool_use_id"`
+}
+
 type ToolInput struct {
 	FilePath string `json:"file_path"`
 	Path     string `json:"path"`
-}
-
-type ToolArgs struct {
-	ToolInput ToolInput `json:"tool_input"`
 }
 
 type AppConfig struct {
@@ -60,24 +67,26 @@ func main() {
 		os.Exit(1)
 	}
 
-	var args ToolArgs
-	if err := json.Unmarshal(data, &args); err != nil {
+	var input HookPayload
+	if err := json.Unmarshal(data, &input); err != nil {
 		fmt.Fprintf(os.Stderr, "Error parsing JSON input: %v\n", err)
 		os.Exit(1)
 	}
 
 	// Check if Claude is trying to read the protected file
-	if args.ToolInput.FilePath != "" {
-		if isProtectedFile(config.ProtectedFiles, args.ToolInput.FilePath) {
-			fmt.Fprintf(os.Stderr, "Access to protected file '%s' is denied.\n", args.ToolInput.FilePath)
-			os.Exit(1)
+	if input.ToolInput.FilePath != "" {
+		if isProtected, pattern := isProtectedFile(config.ProtectedFiles, input.ToolInput.FilePath); isProtected {
+			fmt.Fprintf(os.Stderr, "BLOCKED: File '%s' matches protected pattern '%s'.\n", input.ToolInput.FilePath, pattern)
+			fmt.Fprintf(os.Stderr, "To allow access, remove '%s' from the -protect flag in .claude/settings.local.json\n", pattern)
+			os.Exit(2)
 		}
 	}
 
-	if args.ToolInput.Path != "" {
-		if isProtectedFile(config.ProtectedFiles, args.ToolInput.Path) {
-			fmt.Fprintf(os.Stderr, "Access to protected path '%s' is denied.\n", args.ToolInput.Path)
-			os.Exit(1)
+	if input.ToolInput.Path != "" {
+		if isProtected, pattern := isProtectedFile(config.ProtectedFiles, input.ToolInput.Path); isProtected {
+			fmt.Fprintf(os.Stderr, "BLOCKED: Path '%s' matches protected pattern '%s'.\n", input.ToolInput.Path, pattern)
+			fmt.Fprintf(os.Stderr, "To allow access, remove '%s' from the -protect flag in .claude/settings.local.json\n", pattern)
+			os.Exit(2)
 		}
 	}
 
@@ -85,14 +94,14 @@ func main() {
 	fmt.Println("Input is valid and does not access protected files.")
 }
 
-func isProtectedFile(protectedFiles []string, filePath string) bool {
+func isProtectedFile(protectedFiles []string, filePath string) (bool, string) {
 	for _, protectedFile := range protectedFiles {
 		if strings.Contains(filePath, protectedFile) {
-			return true
+			return true, protectedFile
 		}
 	}
 
-	return false
+	return false, ""
 }
 
 func splitAndTrim(csv, separator string) []string {
