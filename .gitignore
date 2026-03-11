@@ -7,3 +7,6 @@ debug-hook.sh
 
 # Environment files
 .env
+
+# file-guard binaries
+file-guard/file-guard
